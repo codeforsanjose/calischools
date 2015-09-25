@@ -87,6 +87,14 @@ DATABASES = {
     }
 }
 
+# Django Rest Framework options
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGINATE_BY': 15,
+    'PAGINATE_BY_PARAM': 'page_size',
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
