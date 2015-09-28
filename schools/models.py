@@ -23,6 +23,8 @@ class District(Unit):
 
 
 class School(Unit):
+    nces_id = models.CharField(max_length=10, blank=True, null=True)
+    status = models.CharField(max_length=50)
     public = models.BooleanField()
 
     # Parent units
@@ -35,3 +37,7 @@ class School(Unit):
     address = models.CharField(max_length=255)
     latitude = models.FloatField()
     longitude = models.FloatField()
+
+    # Grades
+    high_grade = models.CharField(max_length=2)
+    low_grade = models.CharField(max_length=2)
