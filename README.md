@@ -33,7 +33,7 @@ $ cd calischools
 
 Next, make sure that your existing or newly created `virtualenv` is active, and install the necessary dependencies using `pip`:
 ```
-$ source env/bin/activate
+$ source ../env/bin/activate
 (env)$ pip install -r requirements.txt
 ```
 
