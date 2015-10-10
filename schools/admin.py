@@ -19,8 +19,7 @@ class DistrictAdmin(UnitAdminMixin, admin.ModelAdmin):
 
 @admin.register(School)
 class SchoolAdmin(admin.ModelAdmin):
-    list_display = ('code', 'name', 'county', 'district',
-                    'city', 'phone', 'address',
-                    'latitude', 'longitude', 'public',)
-    list_filter = ('county', 'district', 'city', 'public',)
-    search_fields = ('code', 'name', 'city', 'address',)
+    list_display = ('code', 'name', 'county', 'district', 'phone', 'address',
+                    'lat', 'lng', 'public',)
+    list_filter = ('county', 'district', 'public',)
+    search_fields = ('code', 'name', 'address',)

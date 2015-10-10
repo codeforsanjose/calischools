@@ -50,11 +50,3 @@ class SchoolViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = School.objects.all()
     serializer_class = SchoolSerializer
     filter_class = SchoolFilter
-
-    @detail_route()
-    def records(self, request, pk=None):
-        return NestedViewSetRecordList(
-            view=self,
-            request=request,
-            qs_filter={'school__pk': pk}
-        ).response

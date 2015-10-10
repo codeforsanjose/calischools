@@ -29,13 +29,21 @@ class DistrictCompactMixin(serializers.Serializer):
 
 
 class SchoolCompactSerializer(serializers.HyperlinkedModelSerializer):
+    short_code = serializers.ReadOnlyField()
+
     class Meta:
         model = School
-        fields = ('url', 'code', 'name',)
+        fields = ('url', 'short_code', 'name',)
 
 
 class SchoolSerializer(DistrictCompactMixin,
                        CountyMixin,
                        serializers.HyperlinkedModelSerializer):
+    short_code = serializers.ReadOnlyField()
+    status = serializers.SerializerMethodField()
+
+    def get_status(self, obj):
+        return obj.get_status_display()
+
     class Meta:
         model = School

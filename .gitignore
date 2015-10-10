@@ -1,0 +1,4 @@
+.DS_Store
+*.pyc
+*.sqlite3
+logs/*.log

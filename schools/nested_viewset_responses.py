@@ -1,10 +1,7 @@
 from base.nested_viewset_responses import NestedViewSetList
 
 from .models import District, School
-from .serializers import (
-    DistrictCompactSerializer,
-    SchoolCompactSerializer
-)
+from .serializers import DistrictCompactSerializer, SchoolCompactSerializer
 from .filters import DistrictFilter, SchoolFilter
 
 

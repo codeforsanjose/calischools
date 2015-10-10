@@ -1,0 +1,67 @@
+[
+    {
+        "address": "313 West Winton Ave., Hayward, CA 94544-1136",
+        "code": "01100170130419",
+        "county": "Alameda",
+        "district": "Alameda County Office of Education",
+        "high_grade": "12",
+        "low_grade": "K",
+        "name": "Alameda County Community",
+        "nces_id": "06830",
+        "phone": "(510) 670-6619",
+        "status": "Active",
+        "public": true
+    },
+    {
+        "address": "",
+        "code": "19642126200109",
+        "county": "Los Angeles",
+        "district": "ABC Unified",
+        "high_grade": "12",
+        "low_grade": "K",
+        "name": "AppleTree Baptist Academy",
+        "nces_id": "",
+        "phone": "(562) 633-3294",
+        "status": "Closed or fewer than 6 students",
+        "public": false
+    },
+    {
+        "address": "some_bad_address_that_does_not_exist",
+        "code": "20738126206269",
+        "county": "Test County",
+        "district": "Test District",
+        "high_grade": "",
+        "low_grade": "",
+        "name": "Test School",
+        "nces_id": "",
+        "phone": "(000) 000-0000",
+        "status": "Closed or fewer than 6 students",
+        "public": true
+    },
+    {
+        "address": "1 Infinite Loop, Cupertino, CA 95014",
+        "code": "11123451234567",
+        "county": "Best County",
+        "district": "Best District",
+        "high_grade": "K",
+        "low_grade": "12",
+        "name": "Best School",
+        "nces_id": "",
+        "phone": "(000) 000-0000",
+        "status": "Active",
+        "public": true
+    },
+    {
+        "address": "1600 Amphitheater Parkway, Mountain View, CA 94043",
+        "code": "11123451234567",
+        "county": "Best County",
+        "district": "Best District",
+        "high_grade": "K",
+        "low_grade": "12",
+        "name": "Best School",
+        "nces_id": "",
+        "phone": "(000) 000-0000",
+        "status": "Active",
+        "public": true
+    }
+]
