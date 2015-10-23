@@ -51,7 +51,7 @@ Next, create an admin user account to gain access to Django's admin app:
 ```
 Follow the prompts to complete user registration.
 
-Once your blank database is set up, you may load the initial data dump (current as of **10/09/2015**):
+Once your blank database is set up, you may load the initial data dump (current as of **10/22/2015**):
 ```
 (env)$ ./manage.py loaddata schools
 ```
