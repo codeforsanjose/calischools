@@ -2,6 +2,7 @@ import pytest
 import requests
 import requests_mock
 
+from django.core.validators import URLValidator, EmailValidator
 from lxml import html
 from data.api.generics import ExternalAPI, SearchFormMixin, FieldParserMixin
 from data.api.errors import APIError
@@ -79,23 +80,53 @@ class TestFieldParserMixin:
         def parse(self):
             text = self.request().text
             self.parsed_object = {
-                elem.get('id'): elem.text
-                for elem in html.fromstring(text).xpath('//li/span/p')
+                elem.findtext('th'): elem.find('td')
+                for elem in html.fromstring(text).xpath(
+                    '//table/tr[th/@class="field"]'
+                )
             }
 
         @field
         def name(self):
-            return self.parsed_object['Name']
+            return self.parsed_object['Name'].text
 
         @field
+        def skills(self):
+            elem = self.parsed_object['Skills'].find('p')
+            return elem.text, elem.get('id')
+
+        @field(validator=EmailValidator)
         def email(self):
-            return self.parsed_object['E-mail']
+            return self.parsed_object['E-mail'].text
+
+        @field(validator=EmailValidator)
+        def bad_email(self):
+            return self.parsed_object['Bad E-mail'].text
+
+        @field(validator=URLValidator)
+        def website(self):
+            return self.parsed_object['Website'].find('a').get('href')
+
+        @field(validator=URLValidator)
+        def dirty_website(self):
+            elem = self.parsed_object['Dirty Website'].find('a')
+            return elem.get('href'), elem.text
+
+        @field(validator=URLValidator)
+        def bad_website(self):
+            elem = self.parsed_object['Bad Website'].find('a')
+            return elem.get('href'), elem.text
 
     form_text = """
-    <li><span>
-        <p id="Name">John Doe</p>
-        <p id="E-mail">test@test.com</p>
-    </span></li>
+    <table>
+        <tr><th class="field">Name</th><td>John Doe</td>
+        <tr><th class="field">Skills</th><td><p id="Bowling"></p></td>
+        <tr><th class="field">E-mail</th><td>test@test.com</td>
+        <tr><th class="field">Bad E-mail</th><td>test.test</td>
+        <tr><th class="field">Website</th><td><a href="http://test.com">test.com</a></td>
+        <tr><th class="field">Dirty Website</th><td><a href="http://https://test.com">https://test.com</a></td>
+        <tr><th class="field">Bad Website</th><td><a href="http://http://https://test.com">http://https://test.com</a></td>
+    </table>
     """
     mock_detail = MockDetail()
 
@@ -106,4 +137,9 @@ class TestFieldParserMixin:
 
         fields = self.mock_detail.to_dict()
         assert fields.get('name') == 'John Doe'
+        assert fields.get('skills') == 'Bowling'
         assert fields.get('email') == 'test@test.com'
+        assert fields.get('bad_email') == ''
+        assert fields.get('website') == 'http://test.com'
+        assert fields.get('dirty_website') == 'https://test.com'
+        assert fields.get('bad_website') == ''

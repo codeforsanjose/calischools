@@ -1,5 +1,6 @@
 import pytest
 import requests_mock
+import datetime
 
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -8,7 +9,9 @@ from data.db_loader import DBLoader
 from data.serializers import (
     CountyCodeField,
     DistrictCodeField,
-    SchoolStatusField
+    SchoolStatusField,
+    YesNoField,
+    OptionalDateField,
 )
 from .test_constants import CDE_SCHOOL_DETAIL_JSON
 
@@ -44,6 +47,33 @@ def test_school_status_field_serializer():
     test_serializer = TestSerializer(data={'status': 'Closed (Merged)'})
     assert test_serializer.is_valid(raise_exception=True)
 
+def test_yes_no_field_serializer():
+    class TestSerializer(serializers.Serializer):
+        charter = YesNoField()
+        year_round = YesNoField()
+        empty = YesNoField()
+
+    test_serializer = TestSerializer(
+        data={'charter': 'Yes', 'year_round': 'No', 'empty': ''}
+    )
+    assert test_serializer.is_valid(raise_exception=True)
+    assert test_serializer.validated_data['charter'] is True
+    assert test_serializer.validated_data['year_round'] is False
+    assert test_serializer.validated_data['empty'] is False
+
+def test_school_date_field_serializer():
+    class TestSerializer(serializers.Serializer):
+        open_date = OptionalDateField()
+        close_date = OptionalDateField()
+
+    test_serializer = TestSerializer(
+        data={'open_date': '2000-01-01', 'close_date': ''}
+    )
+    assert test_serializer.is_valid(raise_exception=True)
+    assert test_serializer.validated_data['open_date'] == datetime.date(2000,
+                                                                        1,
+                                                                        1)
+    assert test_serializer.validated_data['close_date'] is None
 
 class TestDBLoader:
     @pytest.mark.django_db
@@ -54,35 +84,41 @@ class TestDBLoader:
 
         counties = County.objects.all()
         assert County.objects.get(name='Alameda').code == '01'
-        assert County.objects.get(code='19').name == 'Los Angeles'
+        assert County.objects.get(code='20').name == 'Madera'
 
         districts = District.objects.all()
         assert (
             District.objects.get(code='0110017').name
                 == 'Alameda County Office of Education'
         )
-        assert District.objects.get(name='ABC Unified').code == '1964212'
+        assert District.objects.get(name='Chawanakee Unified').code == '2075606'
 
         # Get some school objects
         test_school_one = School.objects.get(code='01100170130419')
-        test_school_two = School.objects.get(code='19642126200109')
-        test_school_three = School.objects.get(name='Test School')
-        test_school_four = School.objects.get(name='Best School')
+        test_school_two = School.objects.get(code='01100176141212')
+        test_school_three = School.objects.get(code='20756060132936')
+        test_school_four = School.objects.get(name='Test School No Address')
+        test_school_five = School.objects.get(name='Test School Bad Address')
+        test_school_six = School.objects.get(name='Best School')
 
         assert test_school_one.short_code == '0130419'
-        assert test_school_one.get_status_display() == 'Active'
+        assert test_school_one.status == 'Active'
         assert test_school_one.lat == 37.6582962
         assert test_school_one.lng == -122.0977664
+
         assert test_school_two.low_grade == 'K'
 
+        assert test_school_three.charter is True
+        assert test_school_three.charter_number == '1763'
+
         # Missing address
-        assert test_school_two.lat is None
-        assert test_school_two.lng is None
+        assert test_school_four.lat is None
+        assert test_school_four.lng is None
 
         # Bad address
-        assert test_school_three.lat is None
-        assert test_school_three.lng is None
+        assert test_school_five.lat is None
+        assert test_school_five.lng is None
 
         # Updated address
-        assert test_school_four.lat == 37.4220352
-        assert test_school_four.lng == -122.0841244
+        assert test_school_six.lat == 37.4220352
+        assert test_school_six.lng == -122.0841244

@@ -40,10 +40,6 @@ class SchoolSerializer(DistrictCompactMixin,
                        CountyMixin,
                        serializers.HyperlinkedModelSerializer):
     short_code = serializers.ReadOnlyField()
-    status = serializers.SerializerMethodField()
-
-    def get_status(self, obj):
-        return obj.get_status_display()
 
     class Meta:
         model = School

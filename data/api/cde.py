@@ -1,3 +1,4 @@
+from django.core.validators import URLValidator, EmailValidator
 from lxml import html
 from .generics import ExternalAPI, SearchFormMixin, FieldParserMixin
 from .decorators import field
@@ -93,9 +94,28 @@ class CdeSchoolDetail(FieldParserMixin, CdeAPI):
 
     def parse(self):
         table = self._raw.xpath(
-            '//table/tr[th/@class="shadow details-field-label" and td]'
-        )
-        self.parsed_object = {i.findtext('th/b'): i.find('td') for i in table}
+            '//table[contains(@class, "table") and '
+            'tr/th[contains(@class, "shadow")]]'
+        )[0]
+
+        # There are two types of fields:
+        # 1. <tr><th class='shadow details-field-label'><b>Field</b></th><td>
+        #    Value</td></tr>
+        # 2. <tr><td class='shadow'><b>Field</b></td><td>Value</td></tr>
+
+        # Parse fields of type 1.
+        self.parsed_object = {
+            i.findtext('th/b'): i.find('td')
+            for i in table.xpath(
+                './tr[th/@class="shadow details-field-label" and td]'
+            )
+        }
+
+        # Add fields of type 2.
+        self.parsed_object.update({
+            i.findtext('td/b'): i.find('td').getnext()
+            for i in table.xpath('./tr[td/@class="shadow"]')
+        })
 
     @field
     def phone(self):
@@ -131,7 +151,12 @@ class CdeSchoolDetail(FieldParserMixin, CdeAPI):
 
     @field
     def district(self):
-        return self.parsed_object['District'].findtext('a')
+        if 'District' in self.parsed_object:
+            return self.parsed_object['District'].findtext('a')
+        else:
+            return self.parsed_object[
+                'Located within the boundaries of this public school district'
+            ].text
 
     @field
     def address(self):
@@ -143,3 +168,56 @@ class CdeSchoolDetail(FieldParserMixin, CdeAPI):
             elem.remove(map_link)
 
         return ', '.join(elem.itertext())
+
+    @field
+    def school_type(self):
+        return self.parsed_object['School Type'].text
+
+    @field
+    def year_round(self):
+        return self.parsed_object['Year Round'].text
+
+    @field
+    def charter(self):
+        return self.parsed_object['Charter'].text
+
+    @field
+    def charter_number(self):
+        return self.parsed_object['Charter Number'].text
+
+    @field
+    def charter_funding(self):
+        return self.parsed_object['Charter Funding Type'].text
+
+    @field
+    def open_date(self):
+        return self.parsed_object['Open Date'].text
+
+    @field
+    def close_date(self):
+        return self.parsed_object['Close Date'].text
+
+    @field
+    def fax(self):
+        return self.parsed_object['Fax Number'].text
+
+    @field(validator=EmailValidator)
+    def email(self):
+        return self.parsed_object['School Email'].findtext('a')
+
+    @field(validator=URLValidator)
+    def website(self):
+        elem = self.parsed_object['Web site'].find('a')
+        return elem.get('href'), elem.text
+
+    @field
+    def administrators(self):
+        return '\n'.join(self.parsed_object['Administrator(s)'].itertext())
+
+    @field
+    def mailing_address(self):
+        return ', '.join(self.parsed_object['Mailing Address'].itertext())
+
+    @field
+    def stats(self):
+        return self.parsed_object['Statistical Info'].find('a').get('href')

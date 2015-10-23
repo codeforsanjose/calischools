@@ -39,6 +39,24 @@ class SchoolStatusField(serializers.CharField):
             )
 
 
+class YesNoField(serializers.BooleanField):
+    TRUE_VALUES = {'Yes', 'yes', 't', 'T', 'true',
+                   'True', 'TRUE', '1', 1, True}
+    FALSE_VALUES = {'', 'No', 'no', 'f', 'F', 'false',
+                    'False', 'FALSE', '0', 0, 0.0, False}
+
+
+class OptionalDateField(serializers.DateField):
+    def __init__(self, *args, **kwargs):
+        kwargs.update({'allow_null': True, 'required': False})
+        super(OptionalDateField, self).__init__(*args, **kwargs)
+
+    def to_internal_value(self, value):
+        if not value:
+            return None
+        return super(OptionalDateField, self).to_internal_value(value)
+
+
 class CountySerializer(serializers.Serializer):
     code = CountyCodeField(max_length=2)
     county = serializers.CharField(source='name')
@@ -52,6 +70,10 @@ class DistrictSerializer(serializers.Serializer):
 class SchoolSerializer(serializers.ModelSerializer):
     code = serializers.CharField(max_length=14)
     status = SchoolStatusField()
+    year_round = YesNoField()
+    charter = YesNoField()
+    open_date = OptionalDateField()
+    close_date = OptionalDateField()
 
     class Meta:
         model = School
