@@ -67,6 +67,10 @@ class School(AddressTrackedModelMixin, Unit):
     # Statistics
     stats = models.URLField(blank=True)
 
+    # Track validity of school record
+    last_updated = models.DateTimeField(auto_now=True)
+    deprecated = models.BooleanField(default=False)
+
     @property
     def short_code(self):
         return self.code[-7:]

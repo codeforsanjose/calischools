@@ -21,5 +21,5 @@ class DistrictAdmin(UnitAdminMixin, admin.ModelAdmin):
 class SchoolAdmin(admin.ModelAdmin):
     list_display = ('code', 'name', 'county', 'district', 'phone', 'address',
                     'lat', 'lng', 'public',)
-    list_filter = ('county', 'district', 'public',)
+    list_filter = ('county', 'district', 'public', 'deprecated',)
     search_fields = ('code', 'name', 'address',)

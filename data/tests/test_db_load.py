@@ -105,6 +105,7 @@ class TestDBLoader:
         assert test_school_one.status == 'Active'
         assert test_school_one.lat == 37.6582962
         assert test_school_one.lng == -122.0977664
+        assert test_school_one.deprecated is False
 
         assert test_school_two.low_grade == 'K'
 

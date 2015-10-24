@@ -74,6 +74,7 @@ class SchoolSerializer(serializers.ModelSerializer):
     charter = YesNoField()
     open_date = OptionalDateField()
     close_date = OptionalDateField()
+    deprecated = serializers.BooleanField(default=False)
 
     class Meta:
         model = School

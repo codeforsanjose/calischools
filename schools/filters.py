@@ -25,4 +25,5 @@ class SchoolFilter(BaseFilterSet):
 
     class Meta:
         model = School
-        fields = ('code', 'name', 'public', 'county', 'district', 'status',)
+        fields = ('code', 'name', 'public', 'county', 'district', 'status',
+                  'deprecated',)

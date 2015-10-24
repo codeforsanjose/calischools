@@ -59,6 +59,8 @@ class Migration(migrations.Migration):
                 ('high_grade', models.CharField(max_length=20, blank=True)),
                 ('low_grade', models.CharField(max_length=20, blank=True)),
                 ('stats', models.URLField(blank=True)),
+                ('last_updated', models.DateTimeField(auto_now=True)),
+                ('deprecated', models.BooleanField(default=False)),
                 ('county', models.ForeignKey(related_name='schools', to='schools.County')),
                 ('district', models.ForeignKey(related_name='schools', to='schools.District')),
             ],

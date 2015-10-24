@@ -83,6 +83,10 @@ class DBLoader(object):
         self.add_or_update_geo_coords_for_school(school)
 
     def source(self):
+        # Mark existing school records as deprecated, valid records will then
+        # have their flags updated
+        School.objects.update(deprecated=True)
+
         for mode in (MODE_PUBLIC, MODE_PRIVATE):
             logger.info('Fetching a list of schools to parse...')
             school_endpoints = CdeSchoolSearchList(mode=mode).schools
